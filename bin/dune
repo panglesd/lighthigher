@@ -1,0 +1,4 @@
+(executable
+ (public_name lighthigher)
+ (name main)
+ (libraries lighthigher))
