@@ -21,6 +21,6 @@ let token_stream_to_infos (s : Ocaml_prism.Token.stream) =
 
   fst @@ continue [] 0 (Array.to_list s)
 
-let to_infos txt =
-  let tokens = Ocaml_prism.tokenize (Jstr.v txt) Ocaml_prism.Grammar.ocaml in
+let to_infos grammar txt =
+  let tokens = Ocaml_prism.tokenize (Jstr.v txt) grammar in
   token_stream_to_infos tokens
