@@ -13,10 +13,12 @@
 
 (license LICENSE)
 
+
 (documentation https://url/to/documentation)
 
 (package
  (name lighthigher)
+ (allow_empty)
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends ocaml dune)

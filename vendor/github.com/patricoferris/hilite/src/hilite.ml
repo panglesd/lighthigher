@@ -89,16 +89,11 @@ let src_code_to_tyxml_html ?(lookup_method = `Name) ?tm ~lang src =
   in
   match (find_grammar_fun lookup_method) t lang with
   | None -> Error (`Unknown_lang lang)
-  | Some grammar ->
-      Ok (highlight_string t grammar TmLanguage.empty src |> mk_block lang)
+  | Some grammar -> Ok (highlight_string t grammar TmLanguage.empty src)
 
 let src_code_to_html ?lookup_method ?tm ~lang src =
   src_code_to_tyxml_html ?lookup_method ?tm ~lang src |> function
-  | Ok tyxml ->
-      Ok
-        ("<pre><code>"
-        ^ (String.concat "" @@ List.concat tyxml)
-        ^ "</code></pre>")
+  | Ok tyxml -> Ok (List.flatten tyxml)
   | Error _ as e -> e
 
 module Grammars = struct

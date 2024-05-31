@@ -1,2 +1,3 @@
 (library
- (name lighthigher))
+ (name lighthigher)
+ (libraries hilite brr ocaml_prism))

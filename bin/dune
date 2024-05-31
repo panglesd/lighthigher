@@ -1,4 +1,8 @@
 (executable
- (public_name lighthigher)
+  (modes js)
  (name main)
- (libraries lighthigher))
+ (libraries lighthigher brr))
+
+(rule
+  (mode promote)
+ (action (copy main.bc.js lighthigher.js)))

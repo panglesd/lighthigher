@@ -18,7 +18,7 @@ val src_code_to_html :
   ?tm:TmLanguage.t ->
   lang:string ->
   string ->
-  (string, error) result
+  ((string list * string) list, error) result
 (** [src_code_to_html ~lang src] will highlight the source code [src] in language [lang] and
     return a string *)
 
