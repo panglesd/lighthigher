@@ -1,5 +1,0 @@
-(library
- (name hilite_markdown)
- (optional)
- (public_name hilite.markdown)
- (libraries hilite cmarkit))
