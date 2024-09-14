@@ -1,4 +1,4 @@
-open Types
+type 'info local_info = { start : int; finish : int; payload : 'info }
 
 let print_local_info { start; finish; payload } =
   Brr.Console.(
@@ -45,42 +45,6 @@ let deconstruct_classes element =
   in
   let _, payload = loop element (0, []) in
   payload
-
-(* let impl ~infos txt = *)
-(*   let l = *)
-(*     infos *)
-(*     |> List.sort *)
-(*          (fun { start = l1; finish = e1; _ } { start = l2; finish = e2; _ } -> *)
-(*            if l1 = l2 then compare e2 e1 *)
-(*              (\* If two intervals open at the same time, we open *)
-(*                 first the one that closes last *\) *)
-(*            else compare l1 l2) *)
-(*   in *)
-(*   let get_src a b = *)
-(*     let in_bound x = min (max x 0) (String.length txt) in *)
-(*     let a = in_bound a and b = in_bound b in *)
-(*     let a, b = (min a b, max a b) in *)
-(*     String.sub txt a (b - a) *)
-(*   in *)
-(*   let plain_code = function *)
-(*     | "" -> [] *)
-(*     | s -> [ Types.Source_page.Plain_code s ] *)
-(*   in *)
-(*   let min (a : int) b = if a < b then a else b in *)
-(*   let rec extract from to_ list aux = *)
-(*     match list with *)
-(*     | (k, (loc_start, loc_end)) :: q when loc_start < to_ -> *)
-(*         let loc_end = min loc_end to_ in *)
-(*         (\* In case of inconsistent [a  [b    a] b] *)
-(*            we do                   [a  [b  b]a] *\) *)
-(*         let initial = plain_code (get_src from loc_start) in *)
-(*         let next, q = extract loc_start loc_end q [] in *)
-(*         extract loc_end to_ q *)
-(*           ([ Types.Source_page.Tagged_code (k, List.rev next) ] @ initial @ aux) *)
-(*     | q -> (plain_code (get_src from to_) @ aux, q) *)
-(*   in *)
-(*   let doc, _ = extract 0 (String.length txt) l [] in *)
-(*   List.rev doc *)
 
 let do_infos ~div_infos ~tmate_infos txt =
   let compare_infos { start = l1; finish = e1; _ }
@@ -129,11 +93,7 @@ let do_infos ~div_infos ~tmate_infos txt =
         let next, q = extract loc_start loc_end q [] in
         let aux =
           let at =
-            (classes
-           |> (* List.map *)
-              (* Jstr.v |> *)
-              (* List.map *) Brr.At.class')
-            :: [ Brr.At.class' (Jstr.v "token") ]
+            (classes |> Brr.At.class') :: [ Brr.At.class' (Jstr.v "token") ]
           in
           [ Brr.El.span ~at (List.rev next) ] @ initial @ aux
         in
@@ -150,27 +110,7 @@ let do_infos ~div_infos ~tmate_infos txt =
   in
   extract_divs div_infos tmate_infos
 
-(* let hilite_info_to_info = failwith "" *)
-
 let hl f element =
-  (* let grammar = *)
-  (*   let classes = *)
-  (*     Brr.El.at (Jstr.v "class") element *)
-  (*     |> Option.map Jstr.to_string |> Option.value ~default:"" *)
-  (*     |> String.split_on_char ' ' *)
-  (*   in *)
-  (*   let grammar_name = *)
-  (*     List.find_map *)
-  (*       (fun s -> *)
-  (*         if String.starts_with s ~prefix:"language-" then *)
-  (*           let l = String.length "language-" in *)
-  (*           Some (String.sub s l (String.length s - l)) *)
-  (*         else None) *)
-  (*       classes *)
-  (*   in *)
-  (*   let grammar_name = Option.value grammar_name ~default:"ocaml" in *)
-  (*   Ocaml_prism.Grammar.of_name grammar_name *)
-  (* in *)
   let div_infos, txt = deconstruct element in
   let new_elem = Brr.El.div [] in
   let s = Jv.apply f [| Jv.of_string txt |] in
@@ -178,8 +118,3 @@ let hl f element =
   let tmate_infos = deconstruct_classes new_elem in
   print_infos tmate_infos;
   do_infos ~div_infos ~tmate_infos txt
-(* let at = [Option.map ((fun classes -> (Brr.At.class' classes))) classes] in *)
-(* let () = Brr.El.set_at Brr.At.Name.class' classes new_elem in *)
-(* let () = f *)
-(* (\* let tmate_infos = Text_mate.syntax_highlighting_locs txt in *\) *)
-(* let tmate_infos = Prism.to_infos grammar txt in *)
