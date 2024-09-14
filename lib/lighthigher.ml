@@ -5,46 +5,49 @@ let print_local_info { start; finish; payload } =
     log [ ("start = ", start, "finish = ", finish, "payload = ", payload) ])
 
 let print_infos infos = List.iter print_local_info infos
+let () = ignore print_infos
 
-let deconstruct element =
+let parse_infos payload element =
   let rec loop element acc =
     let children = Brr.El.children element in
     List.fold_left
-      (fun (i, acc, text) child ->
-        if Brr.El.is_el child then loop child (i, acc, text)
-        else
-          let t = Brr.El.txt_text child in
-          let new_elem = Brr.El.span [ Brr.El.txt t ] in
-          Brr.El.insert_siblings `Replace child [ new_elem ];
-          let j = i + String.length (Jstr.to_string t) in
-          let elem = { start = i; finish = j; payload = new_elem } in
-          (j, elem :: acc, Jstr.to_string t :: text))
+      (fun (i, acc, txt) child ->
+        let j, acc, txt =
+          if Brr.El.is_el child then loop child (i, acc, txt)
+          else
+            let new_txt = Brr.El.txt_text child |> Jstr.to_string in
+            let j = i + String.length new_txt in
+            (j, acc, new_txt :: txt)
+        in
+        let acc =
+          match payload child txt with
+          | None -> acc
+          | Some payload ->
+              let elem = { start = i; finish = j; payload } in
+              elem :: acc
+        in
+        (j, acc, txt))
       acc children
   in
   let _, payload, text = loop element (0, [], []) in
   (payload, String.concat "" (List.rev text))
 
-let deconstruct_classes element =
-  let rec loop element acc =
-    let children = Brr.El.children element in
-    List.fold_left
-      (fun (i, acc) child ->
-        if Brr.El.is_el child then
-          let j, acc = loop child (i, acc) in
-          let classes = Brr.El.at Brr.At.Name.class' child in
-          match classes with
-          | None -> (j, acc)
-          | Some classes ->
-              let elem = { start = i; finish = j; payload = classes } in
-              (j, elem :: acc)
-        else
-          let t = Brr.El.txt_text child in
-          let j = i + String.length (Jstr.to_string t) in
-          (j, acc))
-      acc children
+let deconstruct element =
+  let payload node text =
+    if Brr.El.is_el node then None
+    else
+      let text = text |> String.concat "" |> Jstr.of_string in
+      let new_elem = Brr.El.span [ Brr.El.txt text ] in
+      Brr.El.insert_siblings `Replace node [ new_elem ];
+      Some new_elem
   in
-  let _, payload = loop element (0, []) in
-  payload
+  parse_infos payload element
+
+let deconstruct_classes element =
+  let payload node _text =
+    if Brr.El.is_el node then Brr.El.at Brr.At.Name.class' node else None
+  in
+  parse_infos payload element
 
 let do_infos ~div_infos ~tmate_infos txt =
   let compare_infos { start = l1; finish = e1; _ }
@@ -115,6 +118,5 @@ let hl f element =
   let new_elem = Brr.El.div [] in
   let s = Jv.apply f [| Jv.of_string txt |] in
   Jv.set (Brr.El.to_jv new_elem) "innerHTML" s;
-  let tmate_infos = deconstruct_classes new_elem in
-  print_infos tmate_infos;
+  let tmate_infos, _ = deconstruct_classes new_elem in
   do_infos ~div_infos ~tmate_infos txt
