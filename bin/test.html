@@ -3,15 +3,44 @@
     <head>
         <title></title>
         <meta charset="utf-8" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
-<!-- and it's easy to individually load additional languages -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/ocaml.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">
+
+        <!-- Loading highlight js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/ocaml.min.js"></script>
+
+        <!-- Loading lighthigher -->
+        <script src="https://cdn.jsdelivr.net/gh/panglesd/lighthigher@master/bin/lighthigher.min.js"></script>
     </head>
     <body>
-      <pre class="language-ocaml"><code><span id="elem">le<span onclick="alert('aaaa')">t f</span> x = x + 1 (* type error *) + "string"</span>
-(** Oopsla! *)
+        <style>
+         body { font-size: 3em;}
+         pre a { color: unset; text-decoration-style: dotted; }
+         pre {
+             background: lightgrey;
+             padding: 10px;
+         }
+        </style>
+
+        <p>Click on the underlined parts, they are HTML links!</p>
+
+        <p>Have a look at the original HTML: the links are handwritten, but the highlighting is done with highlightjs.</p>
+
+        <p>See <a href="https://github.com/panglesd/lighthigher">lighthigher</a> for how that's done!</p>
+
+        <pre class="language-ocaml"><code><span id="elem">(** Here are some example of OCaml code. Check out <a href="https://ocaml.org/docs/tour-of-ocaml">A tour of OCaml</a> for more *)
+
+let n = 5. +. <a href="https://ocaml.org/manual/5.2/api/Stdlib.html#VALfloat_of_int">float_of_int</a> 10 ;;
+
+let s = <a href="https://ocaml.org/manual/5.2/api/String.html#concat">String.concat</a> "Hello" ^ "World"
         </code></pre>
-        <script src="lighthigher.js"></script>
+
+        <script>
+
+         document.querySelectorAll("[class^='language-']").forEach((elem) => {
+             lighthigh((s) => { return hljs.highlightAuto(s).value }, elem );
+         });
+
+        </script>
     </body>
 </html>
