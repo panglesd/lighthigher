@@ -3,10 +3,15 @@
     <head>
         <title></title>
         <meta charset="utf-8" />
-        <link rel="stylesheet" href="twilight.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+<!-- and it's easy to individually load additional languages -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/ocaml.min.js"></script>
     </head>
     <body>
-        <pre class="language-ocaml"><code><span id="elem">le<span onclick="alert('aaaa')">t f</span> x = x + 1</span></code></pre>
+      <pre class="language-ocaml"><code><span id="elem">le<span onclick="alert('aaaa')">t f</span> x = x + 1 (* type error *) + "string"</span>
+(** Oopsla! *)
+        </code></pre>
         <script src="lighthigher.js"></script>
     </body>
 </html>

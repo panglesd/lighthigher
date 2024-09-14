@@ -18,10 +18,33 @@ let deconstruct element =
           Brr.El.insert_siblings `Replace child [ new_elem ];
           let j = i + String.length (Jstr.to_string t) in
           let elem = { start = i; finish = j; payload = new_elem } in
-          (j, elem :: acc, text ^ Jstr.to_string t))
+          (j, elem :: acc, Jstr.to_string t :: text))
       acc children
   in
-  loop element (0, [], "")
+  let _, payload, text = loop element (0, [], []) in
+  (payload, String.concat "" (List.rev text))
+
+let deconstruct_classes element =
+  let rec loop element acc =
+    let children = Brr.El.children element in
+    List.fold_left
+      (fun (i, acc) child ->
+        if Brr.El.is_el child then
+          let j, acc = loop child (i, acc) in
+          let classes = Brr.El.at Brr.At.Name.class' child in
+          match classes with
+          | None -> (j, acc)
+          | Some classes ->
+              let elem = { start = i; finish = j; payload = classes } in
+              (j, elem :: acc)
+        else
+          let t = Brr.El.txt_text child in
+          let j = i + String.length (Jstr.to_string t) in
+          (j, acc))
+      acc children
+  in
+  let _, payload = loop element (0, []) in
+  payload
 
 (* let impl ~infos txt = *)
 (*   let l = *)
@@ -106,7 +129,10 @@ let do_infos ~div_infos ~tmate_infos txt =
         let next, q = extract loc_start loc_end q [] in
         let aux =
           let at =
-            (classes |> (* List.map *) Jstr.v |> (* List.map *) Brr.At.class')
+            (classes
+           |> (* List.map *)
+              (* Jstr.v |> *)
+              (* List.map *) Brr.At.class')
             :: [ Brr.At.class' (Jstr.v "token") ]
           in
           [ Brr.El.span ~at (List.rev next) ] @ initial @ aux
@@ -126,26 +152,34 @@ let do_infos ~div_infos ~tmate_infos txt =
 
 (* let hilite_info_to_info = failwith "" *)
 
-let hl element =
-  let grammar =
-    let classes =
-      Brr.El.at (Jstr.v "class") element
-      |> Option.map Jstr.to_string |> Option.value ~default:""
-      |> String.split_on_char ' '
-    in
-    let grammar_name =
-      List.find_map
-        (fun s ->
-          if String.starts_with s ~prefix:"language-" then
-            let l = String.length "language-" in
-            Some (String.sub s l (String.length s - l))
-          else None)
-        classes
-    in
-    let grammar_name = Option.value grammar_name ~default:"ocaml" in
-    Ocaml_prism.Grammar.of_name grammar_name
-  in
-  let _, div_infos, txt = deconstruct element in
-  (* let tmate_infos = Text_mate.syntax_highlighting_locs txt in *)
-  let tmate_infos = Prism.to_infos grammar txt in
+let hl f element =
+  (* let grammar = *)
+  (*   let classes = *)
+  (*     Brr.El.at (Jstr.v "class") element *)
+  (*     |> Option.map Jstr.to_string |> Option.value ~default:"" *)
+  (*     |> String.split_on_char ' ' *)
+  (*   in *)
+  (*   let grammar_name = *)
+  (*     List.find_map *)
+  (*       (fun s -> *)
+  (*         if String.starts_with s ~prefix:"language-" then *)
+  (*           let l = String.length "language-" in *)
+  (*           Some (String.sub s l (String.length s - l)) *)
+  (*         else None) *)
+  (*       classes *)
+  (*   in *)
+  (*   let grammar_name = Option.value grammar_name ~default:"ocaml" in *)
+  (*   Ocaml_prism.Grammar.of_name grammar_name *)
+  (* in *)
+  let div_infos, txt = deconstruct element in
+  let new_elem = Brr.El.div [] in
+  let s = Jv.apply f [| Jv.of_string txt |] in
+  Jv.set (Brr.El.to_jv new_elem) "innerHTML" s;
+  let tmate_infos = deconstruct_classes new_elem in
+  print_infos tmate_infos;
   do_infos ~div_infos ~tmate_infos txt
+(* let at = [Option.map ((fun classes -> (Brr.At.class' classes))) classes] in *)
+(* let () = Brr.El.set_at Brr.At.Name.class' classes new_elem in *)
+(* let () = f *)
+(* (\* let tmate_infos = Text_mate.syntax_highlighting_locs txt in *\) *)
+(* let tmate_infos = Prism.to_infos grammar txt in *)
