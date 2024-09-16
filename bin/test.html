@@ -33,9 +33,12 @@
 let n = 5. +. <a href="https://ocaml.org/manual/5.2/api/Stdlib.html#VALfloat_of_int">float_of_int</a> 10 ;;
 
 let s = <a href="https://ocaml.org/manual/5.2/api/String.html#concat">String.concat</a> "Hello" ^ "World"
+
+let _ = <a id="failwith" href="#">failwith "Hey!"</a>
         </code></pre>
 
         <script>
+         document.querySelector("#failwith").addEventListener("click", () => { alert("Hey!"); })
 
          document.querySelectorAll("[class^='language-']").forEach((elem) => {
              lighthigh((s) => { return hljs.highlightAuto(s).value }, elem );
