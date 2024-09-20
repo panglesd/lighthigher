@@ -41,7 +41,7 @@ let _ = <a id="failwith" href="#">failwith "Hey!"</a>
          document.querySelector("#failwith").addEventListener("click", () => { alert("Hey!"); })
 
          document.querySelectorAll("[class^='language-']").forEach((elem) => {
-             lighthigh((s) => { return hljs.highlightAuto(s).value }, elem );
+             hl((s) => { return hljs.highlightAuto(s).value }, elem );
          });
 
         </script>
