@@ -2,6 +2,8 @@
 
 A little helper that takes a "highlighting function", and an element, and use that function to syntax highlight the element, but **without losing the internal HTML structure**! (Element nodes are never removed from the DOM).
 
+This allows you to add links, listen to events, ... in your `<code>` elements while still being able to highlight them.
+
 ## Demo
 
 See [this demo](https://choum.net/panglesd/lighthigher.html)!
