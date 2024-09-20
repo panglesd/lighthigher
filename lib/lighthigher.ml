@@ -10,27 +10,19 @@ let print_local_info { start; finish; payload } =
 
 let print_infos infos = List.iter print_local_info infos
 let () = ignore print_infos
-
-let is_el node =
-  Dom.Node.nodeType node = Dom.Element (* Dom.Element.Brr.El.is_el child *)
+let is_el node = Dom.Node.nodeType node = Dom.Element
 
 let parse_infos payload element =
   let rec loop element acc =
-    let children =
-      (* Brr.El.children *)
-      Dom.Element.childNodes element |> Dom.NodeList.toArray
-    in
+    let children = Dom.Element.childNodes element |> Dom.NodeList.toArray in
     Array.fold_left
       (fun (i, acc, txt) child ->
         let j, acc, txt =
-          if is_el child (* Dom.Element.Brr.El.is_el child *) then
+          if is_el child then
             loop (Dom.Element.ofNode child |> Option.get) (i, acc, txt)
           else
             let child = Dom.Text.ofNode child |> Option.get in
-            let new_txt =
-              (* Brr.El.txt_text *)
-              Dom.Text.textContent child (* |> Jstr.to_string *)
-            in
+            let new_txt = Dom.Text.textContent child in
             let j = i + String.length new_txt in
             (j, acc, new_txt :: txt)
         in
@@ -56,19 +48,17 @@ let deconstruct element =
       let new_elem = Dom.Document.createElement "span" Dom.document in
       let new_text = Dom.Document.createTextNode text Dom.document in
       let () = Dom.Element.appendChild new_text new_elem in
-      (* let new_elem = Brr.El.span [ Brr.El.txt text ] in *)
       let parent = Dom.Text.parentElement node |> Option.get in
       let _ = Dom.Element.replaceChild new_elem node parent in
-      (* Brr.El.insert_siblings `Replace node [ new_elem ]; *)
       Some new_elem
   in
   parse_infos payload element
 
 let deconstruct_classes element =
   let payload node _text =
-    if (* Brr.El. *) is_el node then
+    if is_el node then
       let child = Dom.Element.ofNode node |> Option.get in
-      Some (Dom.Element.className child) (* Brr.El.at Brr.At.Name.class' node *)
+      Some (Dom.Element.className child)
     else None
   in
   parse_infos payload element
@@ -102,11 +92,7 @@ let do_infos ~div_infos ~tmate_infos txt =
   in
   let plain_code = function
     | "" -> []
-    | s ->
-        [
-          (* Brr.El.txt' *)
-          Dom.Document.createTextNode s Dom.document |> Dom.Text.asNode;
-        ]
+    | s -> [ Dom.Document.createTextNode s Dom.document |> Dom.Text.asNode ]
   in
   let rec extract from to_ list aux =
     match list with
@@ -122,21 +108,16 @@ let do_infos ~div_infos ~tmate_infos txt =
         in
         (* In case of inconsistent [a  [b    a]   b]
            we do                   [a  [b  b]a] *)
-        (* TODO: do                 [a  [b  b]a][b b] *)
+        (* TODO: do                [a  [b  b]a][b b] *)
         let initial = plain_code (get_src from loc_start) in
         let next, q = extract loc_start loc_end q [] in
         let aux =
-          let at =
-            classes
-            (* |> Brr.At.class' *)
-            (* :: [ (\* Brr.At.class' (\\* Jstr.v *\\) "token" *\) ] *)
-          in
+          let at = classes in
           let children = List.rev next in
           let span = Dom.Document.createElement "span" Dom.document in
           List.iter (fun c -> Dom.Element.appendChild c span) children;
           Dom.Element.setClassName span at;
-          [ span (* Brr.El.span ~at (List.rev next) *) |> Dom.Element.asNode ]
-          @ initial @ aux
+          [ span |> Dom.Element.asNode ] @ initial @ aux
         in
         extract loc_end to_ q aux
     | q -> (plain_code (get_src from to_) @ aux, q)
@@ -146,7 +127,6 @@ let do_infos ~div_infos ~tmate_infos txt =
     | { start = loc_start; finish = loc_end; payload = e } :: q ->
         let next, tm_list = extract loc_start loc_end tm_list [] in
         let () = replaceChildren (List.rev next |> Array.of_list) e in
-        (* let () = Brr.El.set_children e (List.rev next) in *)
         extract_divs q tm_list
     | _ -> ()
   in
@@ -154,12 +134,9 @@ let do_infos ~div_infos ~tmate_infos txt =
 
 let hl f element =
   let div_infos, txt = deconstruct element in
-  let new_elem =
-    (* Brr.El.div [] *) Dom.Document.createElement "div" Dom.document
-  in
-  let s = (* Jv.apply f [| Jv.of_string txt |] *) f txt in
+  let new_elem = Dom.Document.createElement "div" Dom.document in
+  let s = f txt in
   Dom.Element.setInnerHTML new_elem s;
-  (* Jv.set (Brr.El.to_jv new_elem) "innerHTML" s; *)
   let tmate_infos, _ = deconstruct_classes new_elem in
   do_infos ~div_infos ~tmate_infos txt
 
