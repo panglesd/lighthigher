@@ -10,7 +10,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/ocaml.min.js"></script>
 
         <!-- Loading lighthigher -->
-        <script src="https://cdn.jsdelivr.net/gh/panglesd/lighthigher@master/bin/lighthigher.min.js"></script>
+        <script src="../dist/lighthigher.js"></script>
     </head>
     <body>
         <style>
@@ -41,7 +41,7 @@ let _ = <a id="failwith" href="#">failwith "Hey!"</a>
          document.querySelector("#failwith").addEventListener("click", () => { alert("Hey!"); })
 
          document.querySelectorAll("[class^='language-']").forEach((elem) => {
-             hl((s) => { return hljs.highlightAuto(s).value }, elem );
+             lighthigh((s) => { return hljs.highlightAuto(s).value }, elem );
          });
 
         </script>

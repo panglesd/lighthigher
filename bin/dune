@@ -1,13 +1,5 @@
-; (executable
-;   (modes js)
-;  (name main)
-;  (libraries lighthigher brr))
-
-; (rule
-;   (mode promote)
-;  (action (copy main.bc.js lighthigher.js)))
-
 (melange.emit
+ (alias mela)
  (target main)
-  (module_systems es6)
+ (module_systems es6)
  (libraries lighthigher))

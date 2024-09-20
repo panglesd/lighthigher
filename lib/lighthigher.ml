@@ -140,4 +140,4 @@ let hl f element =
   let tmate_infos, _ = deconstruct_classes new_elem in
   do_infos ~div_infos ~tmate_infos txt
 
-let () = [%mel.raw "window.hl = hl"]
+let () = [%mel.raw "window.lighthigh = hl"]

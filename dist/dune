@@ -1,0 +1,9 @@
+(rule
+ (deps (alias ../bin/mela))
+ (targets main.js)
+ (action (bash "npm exec  -- webpack  ./../bin/main/bin/main.js -o .")))
+
+(rule
+ (deps main.js)
+ (mode promote)
+ (action (copy main.js lighthigher.js)))
