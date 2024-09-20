@@ -13,7 +13,8 @@
 
 (license LICENSE)
 
-
+(using melange 0.1)
+ 
 (documentation https://url/to/documentation)
 
 (package

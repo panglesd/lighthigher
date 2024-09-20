@@ -1,1 +1,1 @@
-val hl : Jv.t -> Brr.El.t -> unit
+val hl : ((* Jv.t *) string -> string) -> Webapi.Dom.Element.t -> unit

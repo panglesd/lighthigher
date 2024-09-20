@@ -1,3 +1,6 @@
 (library
  (name lighthigher)
- (libraries brr))
+ (libraries melange-webapi  ; brr
+ )
+  (preprocess (pps melange.ppx))
+ (modes melange))
