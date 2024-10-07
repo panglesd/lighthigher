@@ -14,17 +14,37 @@
     </head>
     <body>
         <style>
-         body { font-size: 3em;}
+         body { font-size: 2em;}
          pre a { color: unset; text-decoration-style: dotted; }
          pre {
              background: lightgrey;
              padding: 10px;
          }
+	 .tooltiped {
+	     cursor:help ;
+	     text-decoration-line:underline ;
+	     text-decoration-style:wavy;
+	 }
+	 .tooltiped::after {
+	     display : none;
+	     position:absolute;
+	     content:'In OCaml, you can use type variables';
+	     background:white;
+	     border: 1px solid black;
+	 }
+	 .tooltiped:hover::after {
+	     display: block;
+	 }
+
         </style>
+
+	<h1>Lighthigher demo</h1>
+
+        <p>Lighthigher allows to highlight a code block using an html highlighter (such as highlight-js), while keeping any markup/event handling in the code block.</p>
 
         <p>Click on the underlined parts, they are HTML links!</p>
 
-        <p>Have a look at the original HTML: the links are handwritten, but the highlighting is done with highlightjs.</p>
+        <p>Have a look at the original HTML: the links and event handling are there, but the highlighting is done with highlightjs.</p>
 
         <p>See <a href="https://github.com/panglesd/lighthigher">lighthigher</a> for how that's done!</p>
 
@@ -32,9 +52,9 @@
 
 let n = 5. +. <a href="https://ocaml.org/manual/5.2/api/Stdlib.html#VALfloat_of_int">float_of_int</a> 10 ;;
 
-let s = <a href="https://ocaml.org/manual/5.2/api/String.html#concat">String.concat</a> "Hello" ^ "World"
+let s = <a href="https://ocaml.org/manual/5.2/api/String.html#concat">String.concat</a> [ "Hello" ; "World" ]
 
-let _ = <a id="failwith" href="#">failwith "Hey!"</a>
+let _ : <span class="tooltiped">'a -> 'b</span> = <a id="failwith" href="#">failwith "Hey!"</a>
         </code></pre>
 
         <script>
